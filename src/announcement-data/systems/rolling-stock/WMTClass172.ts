@@ -8,6 +8,7 @@ import CustomButtonPane from '@components/PanelPanes/CustomButtonPane'
 
 interface IApproachingStationAnnouncementOptions {
   stationCode: string
+  toc: string
   terminatesHere: boolean
   ticketsReady: boolean
   mindTheGap: boolean
@@ -15,6 +16,7 @@ interface IApproachingStationAnnouncementOptions {
 
 interface IWelcomeAnnouncementOptions {
   terminatesAtCode: string
+  toc: string
   terminatesHere: boolean
   readAllStations: boolean
   callingAtCodes: { crsCode: string; name: string; randomId: string }[]
@@ -26,6 +28,7 @@ const announcementPresets: Readonly<Record<string, ICustomAnnouncementPreset[]>>
       name: 'Dorridge to Worcester Forgate Street',
       state: {
         terminatesAtCode: 'WOF',
+        toc: 'WMR',
         readAllStations: true,
         callingAtCodes: [
           'WMR',
@@ -54,6 +57,7 @@ const announcementPresets: Readonly<Record<string, ICustomAnnouncementPreset[]>>
       name: 'Birmingham Snow Hill to Whitlocks End',
       state: {
         terminatesAtCode: 'WTE',
+        toc: 'Generic',
         readAllStations: true,
         callingAtCodes: ['BMO', 'SMA', 'TYS', 'SRI', 'HLG', 'YRD', 'SRL'].map(crsToStationItemMapper),
       },
@@ -62,6 +66,7 @@ const announcementPresets: Readonly<Record<string, ICustomAnnouncementPreset[]>>
       name: 'Kidderminister to Stratford-upon-Avon',
       state: {
         terminatesAtCode: 'SAV',
+        toc: 'LM',
         readAllStations: true,
         callingAtCodes: [
           'SBJ',
@@ -126,12 +131,17 @@ export default class WMTClass172 extends TrainAnnouncementSystem {
       files.push(...this.pluraliseAudio(changes))
     }
 
+    if (options.toc == 'LM') {
+      files.push({ id: 'thank you for travelling with london midland' })
+    }
+
     if (options.ticketsReady) {
       files.push({ id: 'please have your tickets ready' })
     }
 
     if (options.mindTheGap) {
-      files.push({ id: 'please mind the gap when leaving the train and step' })
+      if (options.toc == 'LM' || options.toc == 'Generic') files.push({ id: 'please mind the gap between the platform and the train' })
+      else files.push({ id: 'please mind the gap when leaving the train and step' })
     }
 
     await this.playAudioFiles(files, download)
@@ -151,12 +161,22 @@ export default class WMTClass172 extends TrainAnnouncementSystem {
       files.push('this is')
       files.push({ id: `stations.${terminatesAtCode}` })
       files.push({ id: 'our final destination' })
-      files.push({ id: 'please mind the gap when leaving the train and step' })
+      if (options.toc == 'LM') {
+        files.push({ id: 'thank you for travelling with london midland' })
+        files.push({ id: 'please mind the gap between the platform and the train' })
+      } else if (options.toc == 'Generic') {
+        files.push({ id: 'please mind the gap between the platform and the train' })
+      } else {
+        files.push({ id: 'please mind the gap when leaving the train and step' })
+      }
       await this.playAudioFiles(files, download)
       return
     }
 
-    files.push('welcome to this service for')
+    if (options.toc == 'Generic') files.push('this train is for')
+    else if (options.toc == 'LM') files.push('welcome aboard this london midland service to')
+    else files.push('welcome to this service for')
+
     files.push({ id: `stations.${terminatesAtCode}` })
 
     const remainingStops = [
@@ -350,12 +370,19 @@ export default class WMTClass172 extends TrainAnnouncementSystem {
     low: this.RealAvailableStationNames,
   }
 
+  private AvailableTOCs: { title: string; value: string }[] = [
+    { title: 'West Midlands Railway', value: 'WMR' },
+    { title: 'London Midland', value: 'LM' },
+    { title: 'Generic', value: 'Generic' },
+  ]
+
   readonly customAnnouncementTabs: Record<string, CustomAnnouncementTab<string>> = {
     approachingStation: {
       name: 'Approaching station',
       component: CustomAnnouncementPane,
       defaultState: {
         stationCode: this.RealAvailableStationNames[0],
+        toc: this.AvailableTOCs[0],
         terminatesHere: false,
         ticketsReady: true,
         mindTheGap: true,
@@ -367,6 +394,12 @@ export default class WMTClass172 extends TrainAnnouncementSystem {
             name: 'Next station',
             default: this.RealAvailableStationNames[0],
             options: AllStationsTitleValueMap.filter(s => this.RealAvailableStationNames.includes(s.value)),
+            type: 'select',
+          },
+          toc: {
+            name: 'TOC',
+            default: this.AvailableTOCs[0],
+            options: this.AvailableTOCs,
             type: 'select',
           },
           ticketsReady: {
@@ -392,6 +425,7 @@ export default class WMTClass172 extends TrainAnnouncementSystem {
       component: CustomAnnouncementPane,
       defaultState: {
         terminatesAtCode: this.RealAvailableStationNames[0],
+        toc: this.AvailableTOCs[0],
         terminatesHere: false,
         readAllStations: true,
         callingAtCodes: [],
@@ -404,6 +438,12 @@ export default class WMTClass172 extends TrainAnnouncementSystem {
             name: 'Terminates at',
             default: this.RealAvailableStationNames[0],
             options: AllStationsTitleValueMap.filter(s => this.RealAvailableStationNames.includes(s.value)),
+            type: 'select',
+          },
+          toc: {
+            name: 'TOC',
+            default: this.AvailableTOCs[0],
+            options: this.AvailableTOCs.filter(s => true),
             type: 'select',
           },
           readAllStations: {
