@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 
 import useIsPlayingAnnouncement from '@helpers/useIsPlayingAnnouncement'
 import DownloadIcon from 'mdi-react/DownloadIcon'
@@ -17,7 +17,7 @@ export interface ICustomButtonPaneProps {
 function CustomButtonPane({ system, buttons, buttonSections }: ICustomButtonPaneProps) {
   const [playError, setPlayError] = useState<Error | null>(null)
 
-  const AnnouncementSystemInstance: AnnouncementSystem = new (system as any)()
+  const AnnouncementSystemInstance: AnnouncementSystem = useMemo(() => new (system as any)(), [system])
 
   const [isDisabled, setIsDisabled] = useIsPlayingAnnouncement()
 

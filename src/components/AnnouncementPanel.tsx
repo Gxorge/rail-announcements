@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
 import Tabs from './Tabs'
 import AnnouncementTabErrorBoundary from './AnnouncementTabErrorBoundary'
@@ -24,10 +24,14 @@ function AnnouncementPanel({ system }: IProps) {
     window.__system = AnnouncementSystem
   }
 
-  const AnnouncementSystemInstance: AnnouncementSystem = AnnouncementSystem ? new (AnnouncementSystem as any)() : null
-  const customTabs = AnnouncementSystemInstance?.customAnnouncementTabs ?? {}
+  const AnnouncementSystemInstance: AnnouncementSystem = useMemo(
+    () => (AnnouncementSystem ? new (AnnouncementSystem as any)() : null),
+    [AnnouncementSystem],
+  )
 
-  const TabPanelMap = React.useMemo(
+  const customTabs = useMemo(() => AnnouncementSystemInstance?.customAnnouncementTabs ?? {}, [AnnouncementSystemInstance])
+
+  const TabPanelMap = useMemo(
     () =>
       !AnnouncementSystem || !AnnouncementSystemInstance
         ? null
@@ -60,9 +64,12 @@ function AnnouncementPanel({ system }: IProps) {
             },
             {} as Record<string, React.ReactElement>,
           ),
-    [customTabs, AnnouncementSystem, AnnouncementSystemInstance, isPresetsDbReady, savePersonalPreset, getPersonalPresets],
+    [customTabs, AnnouncementSystem, AnnouncementSystemInstance, isPresetsDbReady],
   )
-  const TabPanels: React.ReactElement[] = Object.values(TabPanelMap ?? {})
+
+  const TabPanels: React.ReactElement[] = useMemo(() => Object.values(TabPanelMap ?? {}), [TabPanelMap])
+
+  const tabNames = useMemo(() => Object.values(customTabs).map(tab => tab.name), [customTabs])
 
   const [selectedTabIds, setSelectedTabIds] = useAtom(selectedTabIdsState)
 
@@ -141,7 +148,7 @@ function AnnouncementPanel({ system }: IProps) {
           key={AnnouncementSystemInstance?.ID}
           selectedTabIndex={getSelectedTab()}
           onTabChange={setSelectedTab}
-          tabNames={Object.values(customTabs).map(tab => tab.name)}
+          tabNames={tabNames}
           tabItems={TabPanels ?? []}
           customKeyPrefix={AnnouncementSystemInstance?.ID}
         />

@@ -1,8 +1,8 @@
-import { selectedTabIdsState, tabStatesState } from '@atoms/index'
+import { selectedTabIdsState, tabStateFamily } from '@atoms/index'
 import { SystemTabState } from '@data/SystemTabState'
 import { SnackbarKey, useSnackbar } from 'notistack'
 import { useEffect } from 'react'
-import { useSetAtom } from 'jotai'
+import { useSetAtom, useStore } from 'jotai'
 import { useRouter } from 'next/router'
 
 const idToPath: Record<string, string> = {
@@ -31,7 +31,7 @@ export default function useSavedAnnouncementApiLoader() {
   const router = useRouter()
 
   const setSelectedTabIds = useSetAtom(selectedTabIdsState)
-  const setTabState = useSetAtom(tabStatesState)
+  const store = useStore()
 
   useEffect(() => {
     const url = new URL(window.location.href)
@@ -66,7 +66,7 @@ export default function useSavedAnnouncementApiLoader() {
             console.log('Setting selected tab', state.tabId)
             console.log('Setting state', { [`${state.systemId}::${state.tabId}`]: state.state })
 
-            setTabState({ [`${state.systemId}::${state.tabId}`]: state.state })
+            store.set(tabStateFamily(`${state.systemId}::${state.tabId}`), state.state)
             setSelectedTabIds(prev => ({ ...prev, [state.systemId]: state.tabId }))
 
             enqueueSnackbar("We've loaded your shared announcement options", { variant: 'success' })

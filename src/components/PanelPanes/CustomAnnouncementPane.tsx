@@ -18,7 +18,7 @@ import DeleteIcon from 'mdi-react/DeleteOutlineIcon'
 import CopyIcon from 'mdi-react/ContentCopyIcon'
 
 import { useAtom } from 'jotai'
-import { tabStatesState } from '@atoms/index'
+import { tabStateFamily } from '@atoms/index'
 import { SystemTabState } from '@data/SystemTabState'
 
 import copy from 'copy-to-clipboard'
@@ -71,7 +71,7 @@ function CustomAnnouncementPane({
   importStateFromRttService = null,
 }: ICustomAnnouncementPaneProps<string>) {
   const { enqueueSnackbar } = useSnackbar()
-  const defaultState = JSON.parse(_defaultState)
+  const defaultState = React.useMemo(() => JSON.parse(_defaultState), [_defaultState])
 
   const [playError, setPlayError] = React.useState<Error | null>(null)
   const [isSharing, setIsSharing] = React.useState(false)
@@ -79,17 +79,14 @@ function CustomAnnouncementPane({
   const [loadingPersonalPresets, setLoadingPersonalPresets] = React.useState(true)
 
   const [isPlayingAnnouncement, setIsPlayingAnnouncement] = useIsPlayingAnnouncement()
-  const [allTabStates, setAllTabStates] = useAtom(tabStatesState)
-
   const stateKey = `${systemId}::${tabId}`
-  const optionsState = allTabStates?.[stateKey]
+  const [optionsState, setOptionsState] = useAtom(tabStateFamily(stateKey))
 
   useEffect(() => {
     // Set default options if currently null
     if (!optionsState) {
-      setAllTabStates(prevState => ({
-        ...(prevState || {}),
-        [stateKey]: Object.entries(options).reduce((acc, [key, opt]) => {
+      setOptionsState(
+        Object.entries(options).reduce((acc, [key, opt]) => {
           if (options[key].type === 'customNoState') return acc
 
           // @ts-expect-error
@@ -97,17 +94,17 @@ function CustomAnnouncementPane({
 
           return acc
         }, {}),
-      }))
+      )
     }
   }, [optionsState])
 
-  const AnnouncementSystemInstance: AnnouncementSystem = new (system as any)()
+  const AnnouncementSystemInstance: AnnouncementSystem = React.useMemo(() => new (system as any)(), [system])
 
   function createFieldUpdater(field: string): (value: any) => void {
     return (value): void => {
       if (isPlayingAnnouncement) return
 
-      setAllTabStates(prevState => ({ ...(prevState || {}), [stateKey]: { ...(prevState?.[stateKey] || {}), [field]: value } }))
+      setOptionsState(prevState => ({ ...(prevState || {}), [field]: value }))
     }
   }
 
@@ -316,7 +313,7 @@ function CustomAnnouncementPane({
                 key={preset.name}
                 disabled={isPlayingAnnouncement}
                 onClick={() => {
-                  setAllTabStates(prevState => ({ ...(prevState || {}), [stateKey]: preset.state }))
+                  setOptionsState(preset.state)
                 }}
               >
                 <span className="buttonLabel">
@@ -377,7 +374,7 @@ function CustomAnnouncementPane({
                 key={preset.presetId}
                 disabled={isPlayingAnnouncement}
                 presetData={preset}
-                onClick={() => setAllTabStates(prevState => ({ ...(prevState || {}), [stateKey]: { ...defaultState, ...preset.state } }))}
+                onClick={() => setOptionsState({ ...defaultState, ...preset.state })}
                 onDelete={() => deletePersonalPreset(systemId, tabId, preset.presetId).finally(loadPersonalPresetsForTab)}
               />
             ))}
@@ -434,8 +431,8 @@ function CustomAnnouncementPane({
           <ImportStateFromRtt
             disabled={isPlayingAnnouncement}
             importStateFromRttService={(...args) => {
-              const state = importStateFromRttService(...args, allTabStates[stateKey] || {})
-              setAllTabStates(prevState => ({ ...(prevState || {}), [stateKey]: { ...defaultState, ...state } }))
+              const state = importStateFromRttService(...args, optionsState || {})
+              setOptionsState({ ...defaultState, ...state })
             }}
           />
         )}
