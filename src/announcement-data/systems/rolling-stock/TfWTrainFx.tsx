@@ -145,7 +145,7 @@ export default class TfWTrainFx extends TrainAnnouncementSystem {
     }
 
     if (!this.validateStationExists(stationCode, pitch)) {
-      return
+      return []
     }
 
     return [{ id: 'conjoiners.this train is for', opts: { delayStart: delay } }, `stations.${pitch}.${stationCode}`]

@@ -906,7 +906,21 @@ export default class ScotRail extends StationAnnouncementSystem {
   /**
    * @returns "HH:mm YYYYYY service to ZZZZ (via AAAA)."
    */
-  private assembleTrainInfo({ hour, min, toc, via, terminatingStationCode, destAllHigh = false }): AudioItem[] {
+  private assembleTrainInfo({
+    hour,
+    min,
+    toc,
+    via,
+    terminatingStationCode,
+    destAllHigh = false,
+  }: {
+    hour: string
+    min: string
+    toc: string
+    via?: string
+    terminatingStationCode: string
+    destAllHigh?: boolean
+  }): AudioItem[] {
     const files: AudioItem[] = [`time.hour.${hour}`, `time.min.${min}`, ...this.getTocService(toc, 'to')]
 
     if (destAllHigh) {

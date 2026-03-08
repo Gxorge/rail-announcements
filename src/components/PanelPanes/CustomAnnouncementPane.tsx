@@ -4,7 +4,7 @@ import LoadingSpinner from '@components/LoadingSpinner'
 import createOptionField from '@helpers/createOptionField'
 import useIsPlayingAnnouncement from '@helpers/useIsPlayingAnnouncement'
 
-import { addBreadcrumb, captureException } from '@sentry/gatsby'
+import { addBreadcrumb, captureException } from '@sentry/nextjs'
 
 import PlayIcon from 'mdi-react/PlayIcon'
 import ShareIcon from 'mdi-react/ShareVariantIcon'
@@ -17,7 +17,7 @@ import TickIcon from 'mdi-react/CheckIcon'
 import DeleteIcon from 'mdi-react/DeleteOutlineIcon'
 import CopyIcon from 'mdi-react/ContentCopyIcon'
 
-import { useRecoilState } from 'recoil'
+import { useAtom } from 'jotai'
 import { tabStatesState } from '@atoms/index'
 import { SystemTabState } from '@data/SystemTabState'
 
@@ -29,10 +29,10 @@ import clsx from 'clsx'
 import type { OptionsExplanation } from '@announcement-data/AnnouncementSystem'
 import type { IPersonalPresetObject } from '@data/db'
 import type AnnouncementSystem from '@announcement-data/AnnouncementSystem'
-import { RttResponse } from '../../../functions/api/get-service-rtt'
+import { RttResponse } from '../../api-types/get-service-rtt-types'
 import ImportStateFromRtt from '@components/ImportStateFromRtt'
 
-export interface ICustomAnnouncementPreset<State = Record<string, unknown>> {
+export interface ICustomAnnouncementPreset<State = any> {
   name: string
   state: State
 }
@@ -79,16 +79,17 @@ function CustomAnnouncementPane({
   const [loadingPersonalPresets, setLoadingPersonalPresets] = React.useState(true)
 
   const [isPlayingAnnouncement, setIsPlayingAnnouncement] = useIsPlayingAnnouncement()
-  const [allTabStates, setAllTabStates] = useRecoilState(tabStatesState)
+  const [allTabStates, setAllTabStates] = useAtom(tabStatesState)
 
-  const optionsState = allTabStates?.[tabId]
+  const stateKey = `${systemId}::${tabId}`
+  const optionsState = allTabStates?.[stateKey]
 
   useEffect(() => {
     // Set default options if currently null
     if (!optionsState) {
       setAllTabStates(prevState => ({
         ...(prevState || {}),
-        [tabId]: Object.entries(options).reduce((acc, [key, opt]) => {
+        [stateKey]: Object.entries(options).reduce((acc, [key, opt]) => {
           if (options[key].type === 'customNoState') return acc
 
           // @ts-expect-error
@@ -106,7 +107,7 @@ function CustomAnnouncementPane({
     return (value): void => {
       if (isPlayingAnnouncement) return
 
-      setAllTabStates(prevState => ({ ...(prevState || {}), [tabId]: { ...(prevState?.[tabId] || {}), [field]: value } }))
+      setAllTabStates(prevState => ({ ...(prevState || {}), [stateKey]: { ...(prevState?.[stateKey] || {}), [field]: value } }))
     }
   }
 
@@ -315,7 +316,7 @@ function CustomAnnouncementPane({
                 key={preset.name}
                 disabled={isPlayingAnnouncement}
                 onClick={() => {
-                  setAllTabStates(prevState => ({ ...(prevState || {}), [tabId]: preset.state }))
+                  setAllTabStates(prevState => ({ ...(prevState || {}), [stateKey]: preset.state }))
                 }}
               >
                 <span className="buttonLabel">
@@ -376,7 +377,7 @@ function CustomAnnouncementPane({
                 key={preset.presetId}
                 disabled={isPlayingAnnouncement}
                 presetData={preset}
-                onClick={() => setAllTabStates(prevState => ({ ...(prevState || {}), [tabId]: { ...defaultState, ...preset.state } }))}
+                onClick={() => setAllTabStates(prevState => ({ ...(prevState || {}), [stateKey]: { ...defaultState, ...preset.state } }))}
                 onDelete={() => deletePersonalPreset(systemId, tabId, preset.presetId).finally(loadPersonalPresetsForTab)}
               />
             ))}
@@ -433,8 +434,8 @@ function CustomAnnouncementPane({
           <ImportStateFromRtt
             disabled={isPlayingAnnouncement}
             importStateFromRttService={(...args) => {
-              const state = importStateFromRttService(...args, allTabStates[tabId] || {})
-              setAllTabStates(prevState => ({ ...(prevState || {}), [tabId]: { ...defaultState, ...state } }))
+              const state = importStateFromRttService(...args, allTabStates[stateKey] || {})
+              setAllTabStates(prevState => ({ ...(prevState || {}), [stateKey]: { ...defaultState, ...state } }))
             }}
           />
         )}

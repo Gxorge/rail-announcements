@@ -3,11 +3,11 @@ import React, { useCallback, useEffect, useState } from 'react'
 import Tabs from './Tabs'
 import AnnouncementTabErrorBoundary from './AnnouncementTabErrorBoundary'
 
-import { useRecoilState } from 'recoil'
+import { useAtom } from 'jotai'
 import { selectedTabIdsState } from '@atoms'
 import { deletePersonalPreset, getPersonalPresets, initPersonalPresetsDb, savePersonalPreset } from '@data/db'
 
-import * as Sentry from '@sentry/gatsby'
+import * as Sentry from '@sentry/nextjs'
 
 import type AnnouncementSystem from '@announcement-data/AnnouncementSystem'
 
@@ -32,7 +32,8 @@ function AnnouncementPanel({ system }: IProps) {
       !AnnouncementSystem || !AnnouncementSystemInstance
         ? null
         : Object.entries(customTabs).reduce(
-            (acc, [id, { component: TabComponent, ...opts }], i) => {
+            (acc, [id, { component: TabComponentUntyped, ...opts }], i) => {
+              const TabComponent = TabComponentUntyped as React.ComponentType<any>
               acc[opts.name] = (
                 <AnnouncementTabErrorBoundary
                   key={opts.name}
@@ -50,7 +51,7 @@ function AnnouncementPanel({ system }: IProps) {
                     getPersonalPresets={getPersonalPresets}
                     deletePersonalPreset={deletePersonalPreset}
                     defaultState={JSON.stringify(opts.defaultState)}
-                    importStateFromRttService={opts.importStateFromRttService}
+                    importStateFromRttService={opts.importStateFromRttService ?? null}
                   />
                 </AnnouncementTabErrorBoundary>
               )
@@ -63,7 +64,7 @@ function AnnouncementPanel({ system }: IProps) {
   )
   const TabPanels: React.ReactElement[] = Object.values(TabPanelMap ?? {})
 
-  const [selectedTabIds, setSelectedTabIds] = useRecoilState(selectedTabIdsState)
+  const [selectedTabIds, setSelectedTabIds] = useAtom(selectedTabIdsState)
 
   function getSelectedTab() {
     const tabId = selectedTabIds?.[AnnouncementSystemInstance?.ID ?? '']

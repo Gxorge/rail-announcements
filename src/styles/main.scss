@@ -1,0 +1,154 @@
+:root {
+  --primary-red: #f04c63;
+  --primary-blue: #51c5dd;
+  --blue-dark: #0a4f70;
+  --neutral-grey: #c6c4c4;
+  --link-color: #00528a;
+}
+
+@import './br-font.scss';
+// @import './hammersmith-font.scss';
+@import './baseline.scss';
+@import './buttons.scss';
+
+.warningMessage {
+  background: rgba(255, 187, 0, 0.15);
+  border-left: rgb(255, 187, 0) 4px solid;
+  padding: 8px 16px;
+}
+
+.infoMessage {
+  background: rgba(0, 195, 255, 0.15);
+  border-left: rgb(0, 195, 255) 4px solid;
+  padding: 8px 16px;
+}
+
+code {
+  font-family: monospace;
+}
+
+label {
+  display: block;
+  padding: 8px;
+  font-weight: bold;
+
+  user-select: none;
+  -webkit-user-select: none;
+
+  select:not([multiple]),
+  input {
+    margin-left: 8px;
+    display: inline-block;
+    vertical-align: baseline;
+  }
+
+  select[multiple] {
+    margin-top: 4px;
+    display: block;
+    min-width: max-content;
+    max-width: 100%;
+    width: 300px;
+  }
+
+  .helpText {
+    font-size: 0.8em;
+    font-weight: normal;
+    max-width: 100%;
+    width: 300px;
+    line-height: 1.15em;
+    margin-top: 4px;
+  }
+}
+
+fieldset {
+  padding: 8px;
+  margin-top: 12px;
+  margin-bottom: 12px;
+}
+
+input[type='radio'] + label {
+  display: inline-block;
+  padding: 0;
+  margin-left: 12px;
+  margin-right: 12px;
+}
+
+select,
+input {
+  font-size: 1rem;
+  padding: 4px;
+}
+
+html,
+body {
+  scroll-behavior: smooth;
+}
+
+ul {
+  list-style: square outside;
+}
+
+ol {
+  list-style: decimal outside;
+}
+
+ul,
+ol {
+  margin-left: 20px;
+  counter-reset: none;
+
+  &:not(.list) {
+    list-style: none;
+  }
+}
+
+abbr {
+  text-decoration: underline dotted;
+  text-underline-offset: 2px;
+  cursor: help;
+}
+
+h1 {
+  font-size: 1.75rem;
+}
+
+h2 {
+  font-size: 1.5rem;
+}
+
+h3 {
+  font-size: 1.4rem;
+}
+
+@import './checkbox.scss';
+@import './text-input.scss';
+
+.react-tabs__tab-panel:not(.react-tabs__tab-panel--selected) {
+  display: none;
+}
+
+.sr-only {
+  border: 0 !important;
+  clip: rect(1px, 1px, 1px, 1px) !important;
+  -webkit-clip-path: inset(50%) !important;
+  clip-path: inset(50%) !important;
+  height: 1px !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  padding: 0 !important;
+  position: absolute !important;
+  width: 1px !important;
+  white-space: nowrap !important;
+}
+
+.sr-only-focusable:focus,
+.sr-only-focusable:active {
+  clip: auto !important;
+  -webkit-clip-path: none !important;
+  clip-path: none !important;
+  height: auto !important;
+  margin: auto !important;
+  overflow: visible !important;
+  width: auto !important;
+  white-space: normal !important;
+}

@@ -97,14 +97,13 @@ jobs:
       - name: Verify formatting
         run: yarn format:check
 
-      - name: Restore Gatsby cache
+      - name: Restore Next.js cache
         uses: actions/cache@v4
-        id: gatsbyCache
         with:
-          path: ./.cache
-          key: ${{ runner.os }}-gatsby-cache-${{ secrets.CACHE_VERSION }}-${{ hashFiles('public') }}
+          path: ./.next/cache
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('yarn.lock') }}-${{ hashFiles('src/**/*.ts', 'src/**/*.tsx') }}
           restore-keys: |
-            ${{ runner.os }}-gatsby-cache-${{ secrets.CACHE_VERSION }}-
+            ${{ runner.os }}-nextjs-${{ hashFiles('yarn.lock') }}-
 
       - name: Build site
         run: yarn build:ci
@@ -141,7 +140,7 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           projectName: ${{ env.CF_PAGES_PROJECT_NAME }}
-          directory: public # e.g. 'dist'
+          directory: out
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
           wranglerVersion: '3'
           # Use PR head branch if available, otherwise use the current branch

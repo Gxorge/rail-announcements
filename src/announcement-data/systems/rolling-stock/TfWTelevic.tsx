@@ -22,6 +22,7 @@ export default class TfWTelevic extends TrainAnnouncementSystem {
   readonly ID = 'TFW_TELEVIC_V1'
   readonly FILE_PREFIX = 'TfW/Televic'
   readonly SYSTEM_TYPE = 'train'
+  readonly AvailableStationNames = { high: [] as string[], low: [] as string[] }
 
   private readonly announcementPresets: Readonly<
     Record<string, ICustomAnnouncementPreset<IStartOfJourneyAnnouncementOptions | IStoppedAtStationAnnouncementOptions>[]>
