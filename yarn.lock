@@ -3269,6 +3269,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"jotai-family@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "jotai-family@npm:1.0.1"
+  peerDependencies:
+    jotai: ">=2.9.0"
+  checksum: 10/ef01f9a9f917595bfc4032335a78e3e86e4c6848e9750834e44c3401015b497a47dd8231f5ac31f7d961298fb73b2cdf445ebbd5796be3c2d098213729892258
+  languageName: node
+  linkType: hard
+
 "jotai@npm:^2.18.0":
   version: 2.18.0
   resolution: "jotai@npm:2.18.0"
@@ -4017,6 +4026,7 @@ __metadata:
     crunker: "npm:^2.4.0"
     dayjs: "npm:^1.11.19"
     jotai: "npm:^2.18.0"
+    jotai-family: "npm:^1.0.1"
     mdi-react: "npm:^9.4.0"
     nanoid: "npm:^5.1.6"
     next: "npm:^16.1.6"
