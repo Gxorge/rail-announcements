@@ -166,7 +166,7 @@ export default class ThameslinkClass700 extends TrainAnnouncementSystem {
 
     if (Object.keys(this.StationsWithAttractions).includes(options.stationCode)) {
       files.push('exit here for')
-      files.push(`station attractions.${this.StationsWithAttractions[options.stationCode]}`)
+      files.push(`station attractions.${this.StationsWithAttractions[options.stationCode as keyof typeof this.StationsWithAttractions]}`)
     }
 
     if (options.takeCareAsYouLeave) {
@@ -872,7 +872,7 @@ export default class ThameslinkClass700 extends TrainAnnouncementSystem {
           },
           changeForOverridden: {
             type: 'customNoState',
-            component: ({ activeState }) => {
+            component: ({ activeState }: { activeState: Record<string, unknown> }) => {
               if (Object.keys(this.StationsWithForcedChangeHere).includes(activeState.stationCode as string)) {
                 return <p className="warningMessage">The "Change for" setting will have no effect for this station.</p>
               }
@@ -888,7 +888,7 @@ export default class ThameslinkClass700 extends TrainAnnouncementSystem {
           },
           poiMessage: {
             type: 'customNoState',
-            component: ({ activeState }) => {
+            component: ({ activeState }: { activeState: Record<string, unknown> }) => {
               if (Object.keys(this.StationsWithAttractions).includes(activeState.stationCode as string)) {
                 return (
                   <p className="infoMessage">

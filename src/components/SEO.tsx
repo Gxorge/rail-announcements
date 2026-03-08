@@ -1,7 +1,8 @@
 import React from 'react'
+import Head from 'next/head'
 
-import { Title, Meta } from 'react-head'
-import { useStaticQuery, graphql } from 'gatsby'
+const SITE_TITLE = 'UK Rail Announcement Generator'
+const SITE_DESCRIPTION = 'Generate various station and on-train announcements for the UK rail network using raw audio recordings.'
 
 type MetaEntry = {
   name: string
@@ -15,37 +16,25 @@ interface Props {
 }
 
 const SEO: React.FC<Props> = ({ description, title, meta }) => {
-  const { site } = useStaticQuery(graphql`
-    query {
-      site {
-        siteMetadata {
-          title
-          description
-          author
-        }
-      }
-    }
-  `)
-
-  const metaDescription = description || site.siteMetadata.description
-  const formattedTitle = title ? `${title} | ${site.siteMetadata.title}` : site.siteMetadata.title
+  const metaDescription = description || SITE_DESCRIPTION
+  const formattedTitle = title ? `${title} | ${SITE_TITLE}` : SITE_TITLE
 
   return (
-    <>
-      <Title>{formattedTitle}</Title>
-      <Meta name="description" content={metaDescription} />
+    <Head>
+      <title>{formattedTitle}</title>
+      <meta name="description" content={metaDescription} />
 
-      <Meta name="og:title" content={formattedTitle} />
-      <Meta name="og:description" content={metaDescription} />
-      <Meta name="og:type" content="website" />
+      <meta name="og:title" content={formattedTitle} />
+      <meta name="og:description" content={metaDescription} />
+      <meta name="og:type" content="website" />
 
-      <Meta name="twitter:card" content="summary" />
-      <Meta name="twitter:title" content={formattedTitle} />
-      <Meta name="twitter:description" content={metaDescription} />
-      <Meta name="twitter:creator" content="@davwheat_" />
+      <meta name="twitter:card" content="summary" />
+      <meta name="twitter:title" content={formattedTitle} />
+      <meta name="twitter:description" content={metaDescription} />
+      <meta name="twitter:creator" content="@davwheat_" />
 
-      {meta && meta.map((m, i) => <Meta key={`${m.name}--${i}`} name={m.name} content={m.content} />)}
-    </>
+      {meta && meta.map((m, i) => <meta key={`${m.name}--${i}`} name={m.name} content={m.content} />)}
+    </Head>
   )
 }
 

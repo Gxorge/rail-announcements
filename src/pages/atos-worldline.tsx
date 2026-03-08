@@ -1,9 +1,8 @@
+import React from 'react'
 import Layout from '@components/Layout'
 import NavBar from '@components/NavBar'
 import Breakpoints from '@data/breakpoints'
 import { css } from '@emotion/react'
-
-import type { PageProps } from 'gatsby'
 
 const email = css({
   padding: 12,
@@ -25,9 +24,9 @@ const email = css({
   },
 })
 
-function AtosWorldlinePage({ location }: PageProps): JSX.Element {
+export default function AtosWorldlinePage(): React.JSX.Element {
   return (
-    <Layout location={location}>
+    <Layout>
       <header>
         <h1>Atos Worldline announcements removal</h1>
       </header>
@@ -224,7 +223,7 @@ function AtosWorldlinePage({ location }: PageProps): JSX.Element {
               &gt;
               <br />
               &gt; Thanks for your prompt response and confirmation that you intend to remove the files from your websites. In addition to the
-              “ATOS Anne” files, the “ATOS – Matt Streeton” files are also Worldline proprietary and should therefore also be removed.
+              "ATOS Anne" files, the "ATOS – Matt Streeton" files are also Worldline proprietary and should therefore also be removed.
               <br />
               &gt;
               <br />
@@ -275,7 +274,7 @@ function AtosWorldlinePage({ location }: PageProps): JSX.Element {
               <br />
               &gt; Regardless of how the recordings were obtained, the files contain Worldline IP. They were recorded using a script authored by
               Worldline, at a studio provided by Worldline. The recordings were then edited by a Worldline team to make them fit for purpose and
-              Worldline’s proprietary software was then used to “assemble” the audio files in the correct format.
+              Worldline's proprietary software was then used to "assemble" the audio files in the correct format.
               <br />
               &gt;
               <br />
@@ -312,5 +311,3 @@ function AtosWorldlinePage({ location }: PageProps): JSX.Element {
     </Layout>
   )
 }
-
-export default AtosWorldlinePage

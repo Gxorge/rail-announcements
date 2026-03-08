@@ -961,7 +961,7 @@ export default class TfLNorthernLine extends AnnouncementSystem {
           terminating: {
             name: 'Terminates here?',
             default: false,
-            onlyShowWhen(activeState) {
+            onlyShowWhen(activeState: Record<string, unknown>) {
               const data = NextStationData.find(s => s.label === activeState.stationLabel)
 
               return !!(data?.terminatingAudio && !data.onlyTerminates)
@@ -971,7 +971,7 @@ export default class TfLNorthernLine extends AnnouncementSystem {
           mindTheGap: {
             name: 'Mind the gap?',
             default: true,
-            onlyShowWhen(activeState) {
+            onlyShowWhen(activeState: Record<string, unknown>) {
               return !!NextStationData.find(s => s.label === activeState.stationLabel)?.conditionalMindTheGap
             },
             type: 'boolean',

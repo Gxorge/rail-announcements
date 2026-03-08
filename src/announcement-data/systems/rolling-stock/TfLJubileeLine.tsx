@@ -314,7 +314,7 @@ export default class TfLJubileeLine extends AnnouncementSystem {
     await this.playAudioFiles(files, download)
   }
 
-  readonly customAnnouncementTabs: Record<string, CustomAnnouncementTab> = {
+  readonly customAnnouncementTabs: Record<string, CustomAnnouncementTab<string>> = {
     destinationInfo: {
       name: 'Destination info',
       component: CustomAnnouncementPane,
@@ -359,7 +359,7 @@ export default class TfLJubileeLine extends AnnouncementSystem {
               { title: 'Right', value: 'right' },
             ],
             type: 'select',
-            onlyShowWhen: ({ stationName }) => {
+            onlyShowWhen: ({ stationName }: Record<string, unknown>) => {
               const stationData = StationData.find(s => s.name === stationName)
 
               return !stationData?.fullMessages
@@ -369,7 +369,7 @@ export default class TfLJubileeLine extends AnnouncementSystem {
             name: 'Use Elizabeth line version',
             default: true,
             type: 'boolean',
-            onlyShowWhen: ({ stationName }) => {
+            onlyShowWhen: ({ stationName }: Record<string, unknown>) => {
               return elizAffectedStations.includes(stationName as string)
             },
           },
@@ -396,7 +396,7 @@ export default class TfLJubileeLine extends AnnouncementSystem {
             name: 'Use Elizabeth line version',
             default: true,
             type: 'boolean',
-            onlyShowWhen: ({ stationName }) => {
+            onlyShowWhen: ({ stationName }: Record<string, unknown>) => {
               return elizAffectedStations.includes(stationName as string)
             },
           },

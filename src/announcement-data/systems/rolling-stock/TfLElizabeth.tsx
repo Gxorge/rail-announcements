@@ -1233,7 +1233,7 @@ export default class TfLElizabethLine extends AnnouncementSystem {
     await this.playAudioFiles(files, download)
   }
 
-  readonly customAnnouncementTabs: Record<string, CustomAnnouncementTab> = {
+  readonly customAnnouncementTabs: Record<string, CustomAnnouncementTab<string>> = {
     thisStation: {
       name: 'Stopped at station',
       component: CustomAnnouncementPane,
