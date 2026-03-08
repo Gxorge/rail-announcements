@@ -17,7 +17,6 @@ interface IApproachingStationAnnouncementOptions {
 interface IWelcomeAnnouncementOptions {
   terminatesAtCode: string
   toc: string
-  terminatesHere: boolean
   readAllStations: boolean
   callingAtCodes: { crsCode: string; name: string; randomId: string }[]
 }
@@ -157,10 +156,13 @@ export default class WMTClass172 extends TrainAnnouncementSystem {
     const files: AudioItem[] = []
     files.push('bing bong')
 
-    if (options.terminatesHere) {
+    if (options.callingAtCodes.length === 0) {
+      // terminates here
+
       files.push('this is')
       files.push({ id: `stations.${terminatesAtCode}` })
       files.push({ id: 'our final destination' })
+
       if (options.toc == 'LM') {
         files.push({ id: 'thank you for travelling with london midland' })
         files.push({ id: 'please mind the gap between the platform and the train' })
@@ -169,31 +171,29 @@ export default class WMTClass172 extends TrainAnnouncementSystem {
       } else {
         files.push({ id: 'please mind the gap when leaving the train and step' })
       }
-      await this.playAudioFiles(files, download)
-      return
-    }
-
-    if (options.toc == 'Generic') files.push('this train is for')
-    else if (options.toc == 'LM') files.push('welcome aboard this london midland service to')
-    else files.push('welcome to this service for')
-
-    files.push({ id: `stations.${terminatesAtCode}` })
-
-    const remainingStops = [
-      ...callingAtCodes.map((crsCode): AudioItemObject => ({ id: `stations.${crsCode}` })),
-      { id: `stations.${terminatesAtCode}` },
-    ]
-
-    if (callingAtCodes.some(code => !this.validateStationExists(code))) return
-
-    if (remainingStops.length === 1 || !readAllStations) {
-      // Next station is the termination point or we are not reading all stations.
-      files.push({ id: `the next station is` })
-      files.push(remainingStops[0])
     } else {
-      // We are not at the termination point and reading all stations.
-      files.push({ id: `calling at` })
-      files.push(...this.pluraliseAudio(remainingStops))
+      if (options.toc == 'Generic') files.push('this train is for')
+      else if (options.toc == 'LM') files.push('welcome aboard this london midland service to')
+      else files.push('welcome to this service for')
+
+      files.push({ id: `stations.${terminatesAtCode}` })
+
+      const remainingStops = [
+        ...callingAtCodes.map((crsCode): AudioItemObject => ({ id: `stations.${crsCode}` })),
+        { id: `stations.${terminatesAtCode}` },
+      ]
+
+      if (callingAtCodes.some(code => !this.validateStationExists(code))) return
+
+      if (remainingStops.length === 1 || !readAllStations) {
+        // Next station is the termination point or we are not reading all stations.
+        files.push({ id: `the next station is` })
+        files.push(remainingStops[0])
+      } else {
+        // We are not at the termination point and reading all stations.
+        files.push({ id: `calling at` })
+        files.push(...this.pluraliseAudio(remainingStops))
+      }
     }
 
     await this.playAudioFiles(files, download)
@@ -382,7 +382,7 @@ export default class WMTClass172 extends TrainAnnouncementSystem {
       component: CustomAnnouncementPane,
       defaultState: {
         stationCode: this.RealAvailableStationNames[0],
-        toc: this.AvailableTOCs[0],
+        toc: this.AvailableTOCs[0].value,
         terminatesHere: false,
         ticketsReady: true,
         mindTheGap: true,
@@ -398,7 +398,7 @@ export default class WMTClass172 extends TrainAnnouncementSystem {
           },
           toc: {
             name: 'TOC',
-            default: this.AvailableTOCs[0],
+            default: this.AvailableTOCs[0].value,
             options: this.AvailableTOCs,
             type: 'select',
           },
@@ -425,7 +425,7 @@ export default class WMTClass172 extends TrainAnnouncementSystem {
       component: CustomAnnouncementPane,
       defaultState: {
         terminatesAtCode: this.RealAvailableStationNames[0],
-        toc: this.AvailableTOCs[0],
+        toc: this.AvailableTOCs[0].value,
         terminatesHere: false,
         readAllStations: true,
         callingAtCodes: [],
@@ -442,19 +442,14 @@ export default class WMTClass172 extends TrainAnnouncementSystem {
           },
           toc: {
             name: 'TOC',
-            default: this.AvailableTOCs[0],
-            options: this.AvailableTOCs.filter(s => true),
+            default: this.AvailableTOCs[0].value,
+            options: this.AvailableTOCs,
             type: 'select',
           },
           readAllStations: {
             name: 'Read all stations?',
             type: 'boolean',
             default: true,
-          },
-          terminatesHere: {
-            name: 'Train terminates here?',
-            type: 'boolean',
-            default: false,
           },
           callingAtCodes: {
             name: '',
