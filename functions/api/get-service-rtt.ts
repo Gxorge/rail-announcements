@@ -1,5 +1,5 @@
 import TiplocToStation from './tiploc_to_station.json'
-import { PagesFunction, Response } from '@cloudflare/workers-types'
+import { PagesFunction } from '@cloudflare/workers-types'
 export type { RttResponse, RttOrigin, RttDestination, RttLocation, RttAssociation, LocationDisplayAs } from './get-service-rtt-types'
 import type { RttResponse } from './get-service-rtt-types'
 
