@@ -1,8 +1,12 @@
 import { atom } from 'jotai'
-import { atomWithStorage } from 'jotai/utils'
+import { atomWithStorage, createJSONStorage } from 'jotai/utils'
 import { atomFamily } from 'jotai-family'
 
-export const selectedTabIdsState = atomWithStorage<Record<string, string>>('selectedTabIds', {})
+const ssrSafeLocalStorage = createJSONStorage<Record<string, string>>(() =>
+  typeof window !== 'undefined' ? localStorage : ({ getItem: () => null, setItem: () => {}, removeItem: () => {} } as unknown as Storage),
+)
+
+export const selectedTabIdsState = atomWithStorage<Record<string, string>>('selectedTabIds', {}, ssrSafeLocalStorage)
 
 export const isPlayingAnnouncementState = atom<boolean>(false)
 
