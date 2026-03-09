@@ -12,7 +12,9 @@
     "build:ci": "STATIC_EXPORT=true next build --webpack && next-sitemap",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md,less}\"",
     "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,md,less}\"",
-    "cf-typegen": "wrangler types --path='./functions/types.d.ts'"
+    "cf-typegen": "wrangler types --path='./functions/types.d.ts'",
+    "serve-audio": "http-server ./audio/ -c-1 --port 8088 --cors",
+    "develop:workers": "wrangler pages dev --port 8787"
   },
   "dependencies": {
     "@cfworker/json-schema": "^4.1.1",
