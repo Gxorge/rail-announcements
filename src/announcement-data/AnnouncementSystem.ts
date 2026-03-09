@@ -151,6 +151,11 @@ export default abstract class AnnouncementSystem {
    */
   abstract readonly SYSTEM_TYPE: 'station' | 'train'
 
+  /**
+   * Short description of the announcement system, used for SEO meta tags.
+   */
+  readonly DESCRIPTION: string | undefined = undefined
+
   private static readonly SAMPLE_RATE = 48000
 
   headerComponent(): React.ReactNode {

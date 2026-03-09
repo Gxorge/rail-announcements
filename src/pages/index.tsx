@@ -41,7 +41,7 @@ const Systems = [
 
 export default function IndexPage() {
   return (
-    <Layout>
+    <Layout description="Generate station and on-train announcements for the UK rail network using real audio recordings. Covers rolling stock from Avanti, LNER, Thameslink, TfL, Transport for Wales, and West Midlands Trains, plus station systems from Amey/KeTech and ScotRail.">
       <SavedAnnouncementLoader />
 
       <header>

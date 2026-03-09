@@ -127,6 +127,8 @@ export default class AmeyPhil extends StationAnnouncementSystem {
   readonly ID: string = 'AMEY_PHIL_V1'
   readonly FILE_PREFIX: string = 'station/ketech/phil'
   readonly SYSTEM_TYPE = 'station'
+  readonly DESCRIPTION: string =
+    'Generate UK railway station announcements using real audio recordings from Phil Sayer, the voice of the Amey/KeTech announcement system used at hundreds of UK stations.'
 
   protected readonly BEFORE_TOC_DELAY: number = 150
   protected readonly BEFORE_SECTION_DELAY: number = 550

@@ -890,6 +890,7 @@ export default class ScotRail extends StationAnnouncementSystem {
   readonly ID = 'SCOTRAIL_STN_V1'
   readonly FILE_PREFIX = 'station/scotrail/audio'
   readonly SYSTEM_TYPE = 'station'
+  readonly DESCRIPTION = 'Generate ScotRail station announcements using real audio recordings from the ScotRail announcement system.'
 
   private getTocService(toc: string, dir: 'from' | 'to'): AudioItem[] {
     const files: AudioItem[] = []

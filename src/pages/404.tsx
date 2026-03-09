@@ -6,7 +6,7 @@ import NavBar from '@components/NavBar'
 
 export default function Error404Page(): React.JSX.Element {
   return (
-    <Layout>
+    <Layout title="Page not found">
       <header>
         <h1>Error 404 - Not found</h1>
       </header>

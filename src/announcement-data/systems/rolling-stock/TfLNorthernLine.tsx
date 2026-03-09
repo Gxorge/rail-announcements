@@ -807,6 +807,8 @@ export default class TfLNorthernLine extends AnnouncementSystem {
   readonly ID = 'TFL_NORTHERN_LINE_V1'
   readonly FILE_PREFIX = 'TfL/Northern Line'
   readonly SYSTEM_TYPE = 'train'
+  readonly DESCRIPTION =
+    'Generate TfL Northern Line on-train announcements using real audio recordings from the Northern line announcement system.'
 
   private assembleDestinationInfoSegments(stationName: string, delayStart: number = 0): AudioItem[] {
     const parsed = stationName.toLowerCase().replace(/[^a-z \.]/g, '')

@@ -20,7 +20,7 @@ export default function SystemPageTemplate({ system }: IProps) {
   const s: AnnouncementSystem = new (system as any)()
 
   return (
-    <Layout title={s.NAME}>
+    <Layout title={s.NAME} description={s.DESCRIPTION}>
       <SavedAnnouncementLoader />
 
       <header>

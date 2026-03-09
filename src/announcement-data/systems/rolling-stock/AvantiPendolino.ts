@@ -67,6 +67,8 @@ export default class AvantiPendolino extends TrainAnnouncementSystem {
   readonly ID = 'AWC_PENDOLINO'
   readonly FILE_PREFIX = 'AWC/390'
   readonly SYSTEM_TYPE = 'train'
+  readonly DESCRIPTION =
+    'Generate Avanti West Coast Pendolino (Class 390) on-train announcements using real audio recordings from Emma Lintern and Pete Gold.'
 
   private async playApproachingStationAnnouncement(options: IApproachingStationAnnouncementOptions, download: boolean = false): Promise<void> {
     const files: AudioItem[] = []

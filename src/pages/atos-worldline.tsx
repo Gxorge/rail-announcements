@@ -26,7 +26,10 @@ const email = css({
 
 export default function AtosWorldlinePage(): React.JSX.Element {
   return (
-    <Layout>
+    <Layout
+      title="Atos Worldline announcements removal"
+      description="An open letter explaining why Atos Worldline announcement audio was removed from this site following a request from Worldline's legal department."
+    >
       <header>
         <h1>Atos Worldline announcements removal</h1>
       </header>

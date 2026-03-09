@@ -38,7 +38,7 @@ export default function ChangelogPage() {
   }, [])
 
   return (
-    <Layout>
+    <Layout title="Changelog" description="See what's new on the UK Rail Announcement Generator — recent additions, fixes, and other changes.">
       <header>
         <h1>Changelog</h1>
       </header>

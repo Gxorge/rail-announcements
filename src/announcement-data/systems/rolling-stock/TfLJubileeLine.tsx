@@ -245,6 +245,8 @@ export default class TfLJubileeLine extends AnnouncementSystem {
   readonly ID = 'TFL_JUBILEE_LINE_V1'
   readonly FILE_PREFIX = 'TfL/Jubilee Line'
   readonly SYSTEM_TYPE = 'train'
+  readonly DESCRIPTION =
+    'Generate TfL Jubilee Line on-train announcements using real audio recordings from the Jubilee line announcement system.'
 
   private async playDestinationInfoAnnouncement(options: IDestinationInfoAnnouncementOptions, download: boolean = false): Promise<void> {
     const files: AudioItem[] = []

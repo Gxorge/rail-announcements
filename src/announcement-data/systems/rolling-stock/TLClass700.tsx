@@ -82,6 +82,7 @@ export default class ThameslinkClass700 extends TrainAnnouncementSystem {
   readonly ID = 'TL_CLASS_700_V1'
   readonly FILE_PREFIX = 'TL/700'
   readonly SYSTEM_TYPE = 'train'
+  readonly DESCRIPTION = 'Generate Thameslink Class 700 on-train announcements using real audio recordings from Julie Berry and Matt Streeton.'
 
   private readonly StationsWithAttractions = {
     BFR: 'riverboat services from blackfriars pier the southbank and the tate modern',
