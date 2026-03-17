@@ -56,7 +56,10 @@ export default class Crunker {
   private _context: AudioContext | null = null
 
   private _audioUnlocked: boolean = false
+  private _mobileUnloaded: boolean = false
   private _scratchBuffer: AudioBuffer | null = null
+  private _suspendTimer: ReturnType<typeof setTimeout> | null = null
+  private _isPlaying: boolean = false
 
   /**
    * Creates a new instance of Crunker with the provided options.
@@ -115,6 +118,15 @@ export default class Crunker {
       }
       if (!this._context) return
 
+      // Mobile Safari bug: opening/closing tabs can change the sampleRate from
+      // 44100 to 48000. Recreate the context to fix it.
+      if (!this._mobileUnloaded && this._context.sampleRate !== 44100) {
+        this._mobileUnloaded = true
+        this._context.close()
+        this._context = this._tryCreateContext(this._requestedSampleRate)
+        if (!this._context) return
+      }
+
       // Create a scratch buffer if we haven't yet
       if (!this._scratchBuffer) {
         this._scratchBuffer = this._context.createBuffer(1, 1, 22050)
@@ -150,6 +162,86 @@ export default class Crunker {
     document.addEventListener('touchend', unlock, true)
     document.addEventListener('click', unlock, true)
     document.addEventListener('keydown', unlock, true)
+  }
+
+  /**
+   * Automatically suspend the AudioContext after no sound has played for 30 seconds.
+   * This saves processing/energy and fixes various browser-specific bugs with audio getting stuck.
+   *
+   * Based on Howler.js's auto-suspend approach.
+   *
+   * @internal
+   */
+  private _autoSuspend(): void {
+    if (!this._context || typeof this._context.suspend !== 'function') {
+      return
+    }
+
+    // Don't suspend if something is currently playing.
+    if (this._isPlaying) {
+      return
+    }
+
+    if (this._suspendTimer) {
+      clearTimeout(this._suspendTimer)
+    }
+
+    // If no sound has played after 30 seconds, suspend the context.
+    this._suspendTimer = setTimeout(() => {
+      this._suspendTimer = null
+
+      if (!this._context || this._isPlaying) return
+
+      this._context.suspend()
+    }, 30_000)
+  }
+
+  /**
+   * Automatically resume the AudioContext when a new sound is played.
+   * Handles the `suspended` and iOS-specific `interrupted` states.
+   *
+   * Based on Howler.js's auto-resume approach.
+   *
+   * @internal
+   */
+  private _autoResume(): void {
+    if (!this._context || typeof this._context.resume !== 'function') {
+      return
+    }
+
+    const state = this._context.state as string
+
+    // Clear any pending suspend timer since we're about to play.
+    if (state === 'running' && (this._context as any).state !== 'interrupted' && this._suspendTimer) {
+      clearTimeout(this._suspendTimer)
+      this._suspendTimer = null
+    } else if (state === 'suspended' || state === 'interrupted') {
+      this._context.resume()
+    }
+  }
+
+  /**
+   * Clean up a finished buffer source to prevent memory leaks on iOS.
+   * On Apple devices, assigns the scratch buffer to detached sources so
+   * iOS can properly garbage-collect the WebAudio buffers.
+   *
+   * Based on Howler.js's _cleanBuffer approach.
+   *
+   * @internal
+   */
+  private _cleanBuffer(source: AudioBufferSourceNode): void {
+    const isApple = typeof navigator !== 'undefined' && navigator.vendor && navigator.vendor.indexOf('Apple') >= 0
+
+    source.onended = null
+    source.disconnect(0)
+
+    if (isApple && this._scratchBuffer) {
+      try {
+        source.buffer = this._scratchBuffer
+      } catch {
+        // Ignore — some browsers don't allow reassigning buffer
+      }
+    }
   }
 
   /**
@@ -361,22 +453,30 @@ export default class Crunker {
   /**
    * Plays the provided AudioBuffer in an AudioBufferSourceNode.
    *
-   * Automatically resumes a suspended AudioContext before playback.
+   * Automatically resumes a suspended or interrupted AudioContext before playback.
    * Returns the source node and a `contextResume` promise that rejects if the
    * AudioContext remains suspended (e.g. browser autoplay policy blocked it).
    */
   play(buffer: AudioBuffer, beforePlay: (source: AudioBufferSourceNode) => void): CrunkerPlayResult {
     const ctx = this._ensureContext()
 
-    // Auto-resume the context if it's suspended (e.g. browser autoplay policy)
-    if (ctx.state === 'suspended') {
-      ctx.resume()
-    }
+    // Auto-resume the context if it's suspended or interrupted (iOS-specific state)
+    this._autoResume()
 
     const source = ctx.createBufferSource()
 
     source.buffer = buffer
     source.connect(ctx.destination)
+
+    this._isPlaying = true
+
+    // Clean up the buffer source when playback ends to prevent iOS memory leaks,
+    // and kick off auto-suspend timer.
+    source.addEventListener('ended', () => {
+      this._isPlaying = false
+      this._cleanBuffer(source)
+      this._autoSuspend()
+    })
 
     beforePlay(source)
 
@@ -385,7 +485,8 @@ export default class Crunker {
     // Build a promise that checks whether the context actually resumed.
     // If it's still suspended after 1 second, reject so callers can show UI.
     const contextResume = new Promise<void>((resolve, reject) => {
-      if (ctx.state === 'running') {
+      const state = ctx.state as string
+      if (state === 'running') {
         resolve()
         return
       }
@@ -474,6 +575,10 @@ export default class Crunker {
    * Closes Crunker's internal AudioContext.
    */
   close(): this {
+    if (this._suspendTimer) {
+      clearTimeout(this._suspendTimer)
+      this._suspendTimer = null
+    }
     this._context?.close()
     return this
   }
