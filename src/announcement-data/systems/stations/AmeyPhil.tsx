@@ -4899,14 +4899,10 @@ export default class AmeyPhil extends StationAnnouncementSystem {
     }
 
     if (options.coaches !== 'None') {
-      const coaches = options.coaches.split(' ')[0]
+      const [count, unit] = options.coaches.split(' ')
 
       // Platforms share the same audio as coach numbers
-      files.push(
-        { id: 's.this train is formed of', opts: { delayStart: 250 } },
-        `platform.s.${coaches}`,
-        `e.${coaches === '1' ? 'coach' : 'coaches'}`,
-      )
+      files.push({ id: 's.this train is formed of', opts: { delayStart: 250 } }, `platform.s.${count}`, `e.${unit}`)
     }
 
     files.push(
@@ -5737,30 +5733,12 @@ export default class AmeyPhil extends StationAnnouncementSystem {
             ],
           },
           coaches: {
-            name: 'Coach count',
+            name: 'Coach/carriage count',
             default: '8 coaches',
             options: [
               'None',
               '1 coach',
-              '2 coaches',
-              '3 coaches',
-              '4 coaches',
-              '5 coaches',
-              '6 coaches',
-              '7 coaches',
-              '8 coaches',
-              '9 coaches',
-              '10 coaches',
-              '11 coaches',
-              '12 coaches',
-              '13 coaches',
-              '14 coaches',
-              '15 coaches',
-              '16 coaches',
-              '17 coaches',
-              '18 coaches',
-              '19 coaches',
-              '20 coaches',
+              ...Array.from({ length: 19 }, (_, i) => i + 2).flatMap(n => [`${n} coaches`, `${n} carriages`]),
             ].map(c => ({ title: c, value: c })),
             type: 'select',
           },
@@ -6037,30 +6015,13 @@ export default class AmeyPhil extends StationAnnouncementSystem {
             ],
           },
           coaches: {
-            name: 'Coach count',
+            name: 'Coach/carriage count',
             default: '8 coaches',
             options: [
               'None',
               '1 coach',
-              '2 coaches',
-              '3 coaches',
-              '4 coaches',
-              '5 coaches',
-              '6 coaches',
-              '7 coaches',
-              '8 coaches',
-              '9 coaches',
-              '10 coaches',
-              '11 coaches',
-              '12 coaches',
-              '13 coaches',
-              '14 coaches',
-              '15 coaches',
-              '16 coaches',
-              '17 coaches',
-              '18 coaches',
-              '19 coaches',
-              '20 coaches',
+              '1 carriage',
+              ...Array.from({ length: 19 }, (_, i) => i + 2).flatMap(n => [`${n} coaches`, `${n} carriages`]),
             ].map(c => ({ title: c, value: c })),
             type: 'select',
           },
