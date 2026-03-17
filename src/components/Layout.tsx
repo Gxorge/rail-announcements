@@ -17,7 +17,10 @@ const Layout: React.FC<Props> = ({ children, title, description }) => {
 
       <main
         css={{
-          padding: 24,
+          padding: '24px 16px',
+          '@media (min-width: 600px)': {
+            padding: 24,
+          },
         }}
       >
         {children}
@@ -25,7 +28,10 @@ const Layout: React.FC<Props> = ({ children, title, description }) => {
 
       <footer
         css={{
-          padding: 24,
+          padding: '24px 16px',
+          '@media (min-width: 600px)': {
+            padding: 24,
+          },
         }}
       >
         <p>
