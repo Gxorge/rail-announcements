@@ -1028,7 +1028,7 @@ export function LiveTrainAnnouncements<SystemKeys extends string>({
         const audioOptions = systems[systemKey].DelayCodeMapping[reasonData.value.toString()]?.e
 
         if (audioOptions) {
-          delayReason = audioOptions.split(',')
+          delayReason = Array.isArray(audioOptions) ? audioOptions : [audioOptions]
         }
       }
 

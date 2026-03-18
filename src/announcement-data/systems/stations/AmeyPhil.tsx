@@ -144,7 +144,7 @@ export default class AmeyPhil extends StationAnnouncementSystem {
   protected readonly BEFORE_SECTION_DELAY: number = 550
   protected readonly SHORT_DELAY: number = 500
 
-  readonly DelayCodeMapping: Record<string, { e: string; m: string }> = DelayCodeMapping
+  readonly DelayCodeMapping: Record<string, { e: string | string[] | null; m: string | string[] | null; text: string }> = DelayCodeMapping
 
   protected readonly genericOptions = {
     platform: 's.platform-2',
